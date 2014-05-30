@@ -37,10 +37,20 @@ def project_root_dir():
     
     return os.path.realpath(masterBuildDir)
 
-def latest_build_dir(check_executable=True):
+def latest_rethinkdb_executable(mode=None):
+    return os.path.join(latest_build_dir(check_executable=True, mode=mode), 'rethinkdb')
+
+def latest_build_dir(check_executable=True, mode=None):
     '''Look for the most recently built version of this project'''
     
     masterBuildDir = os.path.join(project_root_dir(), 'build')
+    activeMode = ['release', 'debug']
+    if mode in (None, ''):
+        pass 
+    elif not hasattr(mode, '__iter__'):
+        activeMode = [str(mode)]
+    else:
+        activeMode = mode
     
     if not os.path.isdir(masterBuildDir):
         raise test_exceptions.NotBuiltException(detail='no version of this project have yet been built')
@@ -51,7 +61,7 @@ def latest_build_dir(check_executable=True):
     canidateMtime   = None
     for name in os.listdir(masterBuildDir):
         path = os.path.join(masterBuildDir, name)
-        if os.path.isdir(path) and (name in ('release', 'debug') or name.startswith('debug_') or name.startswith('release_')):
+        if os.path.isdir(path) and any(map(lambda x: name.startswith(x + '_') or name.lower() == x, activeMode)):
             if check_executable == True:
                 if not os.path.isfile(os.path.join(path, 'rethinkdb')):
                     continue
@@ -145,11 +155,10 @@ def import_pyton_driver(targetDir=None, buildDriver=True):
         raise ValueError('import_pyton_driver got an invalid driverDir: %s' % driverDir)
     
     # - return the imported module
-    
-    keptPaths = sys.path
+
     try:
         sys.path.insert(0, os.path.dirname(driverDir))
-        driverModule = importlib.import_module('rethinkdb')
+        import rethinkdb as driverModule
         assert(os.path.realpath(inspect.getfile(driverModule)).startswith(driverDir)), "The wrong version or the rethinkdb Python driver got imported. It should have been in %s but was %s" % (driverDir, os.path.realpath(inspect.getfile(driverModule)))
         return driverModule
     finally:

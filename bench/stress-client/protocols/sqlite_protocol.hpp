@@ -117,8 +117,10 @@ struct sqlite_protocol_t : public protocol_t {
         free(orig_val);
     }
 
-private:
+protected:
     char *_dbname;
+
+private:
     sqlite3 *_dbhandle;
     char buffer[MAX_COMMAND_SIZE];
     sqlite3_stmt *compiled_stmt;

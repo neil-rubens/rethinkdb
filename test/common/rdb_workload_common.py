@@ -1,8 +1,12 @@
+#!/usr/bin/env python
+
+import contextlib, time
+
 from vcoptparse import *
-import contextlib
-import rethinkdb as r
 import http_admin
-import time
+import utils
+
+utils.import_pyton_driver()
 
 def option_parser_for_connect():
     op = OptParser()

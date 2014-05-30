@@ -40,14 +40,8 @@ def find_subpath(subpath):
             return path
     raise RuntimeError("Can't find path %s.  Tried these paths: %s" % (subpath, paths))
 
-def find_rethinkdb_executable(mode = ""):
-    if mode == "":
-        build_dir = os.getenv('RETHINKDB_BUILD_DIR')
-        if build_dir:
-            return os.path.join(build_dir, 'rethinkdb')
-        else:
-            mode = 'debug'
-    return find_subpath("build/%s/rethinkdb" % mode)
+def find_rethinkdb_executable(mode=None):
+    return utils.latest_rethinkdb_executable(mode=mode)
 
 def cleanupMetaclusterFolder(path):
     if os.path.isdir(str(path)):
@@ -274,7 +268,7 @@ class _Process(object):
             if os.path.exists(self.logfile_path):
                 os.unlink(self.logfile_path)
 
-            print "Launching:"
+            print("Launching:")
             print(self.args)
             self.process = subprocess.Popen(self.args, stdout = self.log_file, stderr = self.log_file)
 
