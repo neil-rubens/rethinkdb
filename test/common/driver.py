@@ -1,7 +1,4 @@
 # Copyright 2010-2014 RethinkDB, all rights reserved.
-import atexit, os, random, re, shutil, signal, socket, subprocess, sys, tempfile, time
-
-import utils
 
 """`driver.py` is a module for starting groups of RethinkDB cluster nodes and
 connecting them to each other. It also supports netsplits.
@@ -15,6 +12,10 @@ test it; if you want to do strange things like tell RethinkDB to `--join` an
 invalid port, or delete the files out from under a running RethinkDB process,
 or so on, you should start a RethinkDB process manually using some other
 module. """
+
+import atexit, os, random, re, shutil, signal, socket, subprocess, sys, tempfile, time
+
+import utils
 
 def block_path(source_port, dest_port):
     if not ("resunder" in subprocess.check_output(["ps", "-A"])):
@@ -30,15 +31,6 @@ def unblock_path(source_port, dest_port):
     conn = socket.create_connection(("localhost", 46594))
     conn.sendall("unblock %s %s\n" % (str(source_port), str(dest_port)))
     conn.close()
-
-def find_subpath(subpath):
-    paths = [subpath, "../" + subpath, "../../" + subpath, "../../../" + subpath]
-    if "RETHINKDB" in os.environ:
-        paths = [os.path.join(os.environ["RETHINKDB"], subpath)]
-    for path in paths:
-        if os.path.exists(path):
-            return path
-    raise RuntimeError("Can't find path %s.  Tried these paths: %s" % (subpath, paths))
 
 def find_rethinkdb_executable(mode=None):
     return utils.latest_rethinkdb_executable(mode=mode)
@@ -183,7 +175,7 @@ class Files(object):
     db_path = None
     machine_name = None
     
-    def __init__(self, metacluster, machine_name = None, db_path = None, log_path = None, executable_path = None, command_prefix=None):
+    def __init__(self, metacluster, machine_name=None, db_path=None, log_path=None, executable_path=None, command_prefix=None):
         assert isinstance(metacluster, Metacluster)
         assert not metacluster.closed
         assert machine_name is None or isinstance(machine_name, str)
@@ -233,7 +225,7 @@ class _Process(object):
     driver_port = None
     http_port = None
     
-    def __init__(self, cluster, options, log_path = None, executable_path = None, command_prefix=None):
+    def __init__(self, cluster, options, log_path=None, executable_path=None, command_prefix=None):
         assert isinstance(cluster, Cluster)
         assert cluster.metacluster is not None
         assert all(hasattr(self, x) for x in

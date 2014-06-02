@@ -3,9 +3,10 @@
 import sys, os, time, collections
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir, 'common')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir, 'build', 'packages', 'python')))
-import rethinkdb as r
-import driver, workload_runner, scenario_common, rdb_workload_common
+import driver, workload_runner, scenario_common, rdb_workload_common, utils
 from vcoptparse import *
+
+utils.import_pyton_driver()
 
 op = OptParser()
 scenario_common.prepare_option_parser_mode_flags(op)
