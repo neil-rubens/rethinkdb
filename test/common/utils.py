@@ -94,8 +94,8 @@ def build_in_folder(targetFolder, waitNotification=None, notificationTimeout=2, 
     
     if makeProcess.wait() != 0:
         raise test_exceptions.NotBuildException(detail='Failed making: %s' % targetFolder, debugInfo=outputFile)
-       
-def import_pyton_driver(targetDir=None, buildDriver=True):
+
+def import_pyton_driver(importName='r', targetDir=None, buildDriver=True):
     '''import the latest built version of the python driver into the caller's namespace, ensuring that the drivers are built'''
     import inspect, importlib
     
@@ -129,7 +129,7 @@ def import_pyton_driver(targetDir=None, buildDriver=True):
         srcDir = os.path.join(targetDir, os.path.relpath(driverPaths['python']['relSourcePath'], driverPaths['python']['relDriverPath']))
     
     # - driver directory (one up)
-    elif os.path.exists(os.path.join(targetDir, 'rethinkdb')) and all(map(lambda x: os.path.isfile(os.path.join(targetDir, 'rethinkdb', x)), ['__init__.py', 'ast.py', 'docs.py'])):
+    elif os.path.exists(os.path.join(targetDir, 'rethinkdb')) and all(map(lambda x: os.path.isfile(os.path.join(targetDir, x)), ['__init__.py', 'ast.py', 'docs.py'])):
         driverDir = os.path.join(targetDir, os.path.relpath(driverPaths['python']['relDriverPath'], driverPaths['python']['relSourcePath']))
         srcDir = targetDir
     
