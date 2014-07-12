@@ -13,7 +13,7 @@ private:
     size_t size_;
     char bytes_[];
 
-    friend void counted_add_ref(data_buffer_t *buffer);
+    friend void counted_add_ref(data_buffer_t *buffer) noexcept;
     friend void counted_release(data_buffer_t *buffer);
 
     DISABLE_COPYING(data_buffer_t);
@@ -31,7 +31,7 @@ public:
     int64_t size() const { return size_; }
 };
 
-inline void counted_add_ref(data_buffer_t *buffer) {
+inline void counted_add_ref(data_buffer_t *buffer) noexcept {
     DEBUG_VAR const intptr_t res = __sync_add_and_fetch(&buffer->ref_count_, 1);
     rassert(res > 0);
 }

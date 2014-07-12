@@ -23,11 +23,15 @@ public:
     friend class counted_t;
 
     counted_t() : p_(NULL) { }
-    explicit counted_t(T *p) : p_(p) {
+    explicit counted_t(T *p) noexcept : p_(p) {
+        static_assert(noexcept(counted_add_ref(p_)),
+                      "counted_add_ref must not throw.");
         if (p_) { counted_add_ref(p_); }
     }
 
-    counted_t(const counted_t &copyee) : p_(copyee.p_) {
+    counted_t(const counted_t &copyee) noexcept : p_(copyee.p_) {
+        static_assert(noexcept(counted_add_ref(p_)),
+                      "counted_add_ref must not throw.");
         if (p_) { counted_add_ref(p_); }
     }
 
@@ -138,7 +142,7 @@ counted_t<T> make_counted(Args &&... args) {
 template <class> class single_threaded_countable_t;
 
 template <class T>
-inline void counted_add_ref(const single_threaded_countable_t<T> *p);
+inline void counted_add_ref(const single_threaded_countable_t<T> *p) noexcept;
 template <class T>
 inline void counted_release(const single_threaded_countable_t<T> *p);
 template <class T>
@@ -168,7 +172,7 @@ protected:
     }
 
 private:
-    friend void counted_add_ref<T>(const single_threaded_countable_t<T> *p);
+    friend void counted_add_ref<T>(const single_threaded_countable_t<T> *p) noexcept;
     friend void counted_release<T>(const single_threaded_countable_t<T> *p);
     friend intptr_t counted_use_count<T>(const single_threaded_countable_t<T> *p);
 
@@ -177,7 +181,7 @@ private:
 };
 
 template <class T>
-inline void counted_add_ref(const single_threaded_countable_t<T> *p) {
+inline void counted_add_ref(const single_threaded_countable_t<T> *p) noexcept {
     p->assert_thread();
     p->refcount_ += 1;
     rassert(p->refcount_ > 0);
@@ -202,7 +206,7 @@ inline intptr_t counted_use_count(const single_threaded_countable_t<T> *p) {
 template <class> class slow_atomic_countable_t;
 
 template <class T>
-inline void counted_add_ref(const slow_atomic_countable_t<T> *p);
+inline void counted_add_ref(const slow_atomic_countable_t<T> *p) noexcept;
 template <class T>
 inline void counted_release(const slow_atomic_countable_t<T> *p);
 template <class T>
@@ -229,7 +233,7 @@ protected:
     }
 
 private:
-    friend void counted_add_ref<T>(const slow_atomic_countable_t<T> *p);
+    friend void counted_add_ref<T>(const slow_atomic_countable_t<T> *p) noexcept;
     friend void counted_release<T>(const slow_atomic_countable_t<T> *p);
     friend intptr_t counted_use_count<T>(const slow_atomic_countable_t<T> *p);
 
@@ -238,7 +242,7 @@ private:
 };
 
 template <class T>
-inline void counted_add_ref(const slow_atomic_countable_t<T> *p) {
+inline void counted_add_ref(const slow_atomic_countable_t<T> *p) noexcept {
     DEBUG_VAR intptr_t res = __sync_add_and_fetch(&p->refcount_, 1);
     rassert(res > 0);
 }

@@ -126,7 +126,7 @@ private:
     friend class log_serializer_t;
     friend class dbm_read_ahead_fsm_t;  // For read-ahead tokens.
 
-    friend void counted_add_ref(ls_block_token_pointee_t *p);
+    friend void counted_add_ref(ls_block_token_pointee_t *p) noexcept;
     friend void counted_release(ls_block_token_pointee_t *p);
 
     ls_block_token_pointee_t(log_serializer_t *serializer,
@@ -150,7 +150,7 @@ private:
 void debug_print(printf_buffer_t *buf,
                  const counted_t<ls_block_token_pointee_t> &token);
 
-void counted_add_ref(ls_block_token_pointee_t *p);
+void counted_add_ref(ls_block_token_pointee_t *p) noexcept;
 void counted_release(ls_block_token_pointee_t *p);
 
 template <>
@@ -227,7 +227,7 @@ private:
 };
 
 template <class inner_serializer_t>
-void counted_add_ref(scs_block_token_t<inner_serializer_t> *p) {
+void counted_add_ref(scs_block_token_t<inner_serializer_t> *p) noexcept {
     DEBUG_VAR const intptr_t res = __sync_add_and_fetch(&p->ref_count_, 1);
     rassert(res > 0);
 }

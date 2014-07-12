@@ -960,7 +960,7 @@ void debug_print(printf_buffer_t *buf,
     }
 }
 
-void counted_add_ref(ls_block_token_pointee_t *p) {
+void counted_add_ref(ls_block_token_pointee_t *p) noexcept {
     DEBUG_VAR intptr_t res = __sync_add_and_fetch(&p->ref_count_, 1);
     rassert(res > 0);
 }
