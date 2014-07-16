@@ -98,9 +98,6 @@ private:
 
 RDB_SERIALIZE_OUTSIDE(batchspec_t);
 
-// TODO: make user-tunable.
-size_t array_size_limit();
-
 } // namespace ql
 
 #endif // RDB_PROTOCOL_BATCHING_HPP_
